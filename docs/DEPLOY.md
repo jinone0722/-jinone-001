@@ -43,6 +43,7 @@ POSTGRES_PASSWORD=
 - `SSH_PORT`
 - `SSH_USER`
 - `SSH_PRIVATE_KEY`
+- `SSH_PASSPHRASE`，如果私钥有 passphrase
 - `APP_ENV`
 
 ## 自动部署
