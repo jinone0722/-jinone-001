@@ -49,14 +49,15 @@ jobs:
 
       - name: Deploy to VPS with SSH_PRIVATE_KEY
         id: deploy_private_key
-        continue-on-error: true
+      - name: Deploy to VPS with SSH_PRIVATE_KEY
+        id: deploy_private_key
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          
           envs: APP_ENV,REPO
           script: |
             set -e
@@ -71,29 +72,6 @@ jobs:
             if [ -n "$APP_ENV" ]; then
               printf "%s\n" "$APP_ENV" > .env
             fi
+
             docker compose up -d --build
 
-      - name: Deploy to VPS with SSH_KEY fallback
-        if: steps.deploy_private_key.outcome == 'failure'
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          envs: APP_ENV,REPO
-          script: |
-            set -e
-            APP_DIR="$HOME/work-sphere-ai"
-            if [ ! -d "$APP_DIR/.git" ]; then
-              git clone "https://github.com/$REPO.git" "$APP_DIR"
-            fi
-            cd "$APP_DIR"
-            git fetch origin main
-            git checkout main
-            git pull origin main
-            if [ -n "$APP_ENV" ]; then
-              printf "%s\n" "$APP_ENV" > .env
-            fi
-            docker compose up -d --build
