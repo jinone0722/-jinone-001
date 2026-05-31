@@ -1,0 +1,61 @@
+name: Deploy WorkSphere AI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate Prisma client
+        run: npm run db:generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ secrets.SSH_HOST != '' }}
+    env:
+      APP_ENV: ${{ secrets.APP_ENV }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          envs: APP_ENV,REPO
+          script: |
+            set -e
+            APP_DIR="$HOME/work-sphere-ai"
+            if [ ! -d "$APP_DIR/.git" ]; then
+              git clone "https://github.com/$REPO.git" "$APP_DIR"
+            fi
+            cd "$APP_DIR"
+            git fetch origin main
+            git checkout main
+            git pull origin main
+            if [ -n "$APP_ENV" ]; then
+              printf "%s\n" "$APP_ENV" > .env
+            fi
+            docker compose up -d --build
