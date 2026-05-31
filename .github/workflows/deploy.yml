@@ -47,10 +47,6 @@ jobs:
           echo "SSH_KEY fallback configured: $HAS_SSH_KEY"
           echo "SSH_PASSPHRASE configured: $HAS_SSH_PASSPHRASE"
 
-      - name: Deploy to VPS with SSH_PRIVATE_KEY
-        id: deploy_private_key
-      - name: Deploy to VPS with SSH_PRIVATE_KEY
-        id: deploy_private_key
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
