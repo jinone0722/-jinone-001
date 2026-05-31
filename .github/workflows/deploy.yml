@@ -37,7 +37,16 @@ jobs:
     env:
       APP_ENV: ${{ secrets.APP_ENV }}
       REPO: ${{ github.repository }}
+      HAS_SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE != '' }}
+      HAS_SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY != '' }}
+      HAS_SSH_KEY: ${{ secrets.SSH_KEY != '' }}
     steps:
+      - name: Check deploy secret presence
+        run: |
+          echo "SSH_PRIVATE_KEY configured: $HAS_SSH_PRIVATE_KEY"
+          echo "SSH_KEY fallback configured: $HAS_SSH_KEY"
+          echo "SSH_PASSPHRASE configured: $HAS_SSH_PASSPHRASE"
+
       - name: Deploy to VPS with SSH_PRIVATE_KEY
         id: deploy_private_key
         continue-on-error: true
