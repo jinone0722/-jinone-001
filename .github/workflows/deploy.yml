@@ -89,3 +89,5 @@ jobs:
 
             $DOCKER compose version
             $DOCKER compose up -d --build
+            $DOCKER compose ps
+            $DOCKER compose logs --tail=120 api nginx
