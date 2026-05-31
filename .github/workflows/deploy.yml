@@ -71,4 +71,21 @@ jobs:
               printf "%s\n" "$APP_ENV" > .env
             fi
 
-            docker compose up -d --build
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "Docker is not installed or not in PATH for user $(whoami)."
+              exit 127
+            fi
+
+            DOCKER="docker"
+            if ! docker info >/dev/null 2>&1; then
+              if command -v sudo >/dev/null 2>&1 && sudo -n docker info >/dev/null 2>&1; then
+                DOCKER="sudo docker"
+              else
+                echo "Docker is installed, but user $(whoami) cannot access the Docker daemon."
+                echo "Run: sudo usermod -aG docker $(whoami), then log out and log back in."
+                exit 126
+              fi
+            fi
+
+            $DOCKER compose version
+            $DOCKER compose up -d --build
