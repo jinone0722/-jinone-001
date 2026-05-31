@@ -2,6 +2,8 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+RUN apk add --no-cache openssl
+
 COPY package.json ./
 COPY package-lock.json ./
 COPY apps/api/package.json apps/api/package.json

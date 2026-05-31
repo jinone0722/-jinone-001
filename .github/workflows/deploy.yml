@@ -89,5 +89,7 @@ jobs:
 
             $DOCKER compose version
             $DOCKER compose up -d --build
+            sleep 25
             $DOCKER compose ps
-            $DOCKER compose logs --tail=120 api nginx
+            $DOCKER compose logs --tail=160 api postgres nginx
+            $DOCKER compose exec -T api node -e "fetch('http://127.0.0.1:4000/auth/me').then(async r => { console.log('api self-check status', r.status); process.exit(r.status === 401 ? 0 : 1); }).catch(error => { console.error(error); process.exit(1); })"
