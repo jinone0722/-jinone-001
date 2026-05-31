@@ -1,3 +1,4 @@
+cat > .github/workflows/deploy.yml <<'EOF'
 name: Deploy WorkSphere AI
 
 on:
@@ -9,6 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,40 +36,41 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     env:
       APP_ENV: ${{ secrets.APP_ENV }}
       REPO: ${{ github.repository }}
-      HAS_SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE != '' }}
-      HAS_SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY != '' }}
-      HAS_SSH_KEY: ${{ secrets.SSH_KEY != '' }}
-    steps:
-      - name: Check deploy secret presence
-        run: |
-          echo "SSH_PRIVATE_KEY configured: $HAS_SSH_PRIVATE_KEY"
-          echo "SSH_KEY fallback configured: $HAS_SSH_KEY"
-          echo "SSH_PASSPHRASE configured: $HAS_SSH_PASSPHRASE"
 
+    steps:
+      - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.2.0
+
         with:
           host: ${{ secrets.SSH_HOST }}
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          
+
           envs: APP_ENV,REPO
+
           script: |
             set -e
+
             APP_DIR="$HOME/work-sphere-ai"
+
             if [ ! -d "$APP_DIR/.git" ]; then
               git clone "https://github.com/$REPO.git" "$APP_DIR"
             fi
+
             cd "$APP_DIR"
+
             git fetch origin main
             git checkout main
             git pull origin main
+
             if [ -n "$APP_ENV" ]; then
               printf "%s\n" "$APP_ENV" > .env
             fi
 
             docker compose up -d --build
-
+EOF
