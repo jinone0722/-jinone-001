@@ -15,7 +15,7 @@
 
 ## 环境变量
 
-在服务器上准备 `.env`，或将完整内容写入 GitHub Secret `APP_ENV`：
+在服务器上准备 `.env`，或将完整内容写入 GitHub Secret `APP_ENV`。Docker/生产环境可以从 `.env.docker.example` 或 `.env.example` 复制后改值：
 
 ```bash
 DATABASE_URL=
@@ -32,6 +32,8 @@ POSTGRES_DB=
 POSTGRES_USER=
 POSTGRES_PASSWORD=
 ```
+
+本地开发不要直接使用 Docker 服务名版本的 `DATABASE_URL`；请复制 `.env.local.example`，它使用 `localhost` 连接本机映射出来的 PostgreSQL、Redis 和 Qdrant。
 
 ## GitHub Secrets
 
