@@ -18,6 +18,14 @@
     "db:deploy": "npm run prisma:deploy -w @worksphere/database",
     "db:studio": "npm run prisma:studio -w @worksphere/database"
   },
+  "overrides": {
+    "@nestjs/common": "11.1.24",
+    "next": {
+      "postcss": "8.5.15"
+    },
+    "postcss": "8.5.15",
+    "qs": "6.15.2"
+  },
   "devDependencies": {
     "typescript": "^5.6.3"
   }
