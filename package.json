@@ -16,6 +16,8 @@
     "db:generate": "npm run prisma:generate -w @worksphere/database",
     "db:migrate": "npm run prisma:migrate -w @worksphere/database",
     "db:deploy": "npm run prisma:deploy -w @worksphere/database",
+    "db:push": "npm run prisma:push -w @worksphere/database",
+    "db:resolve:init": "npm run prisma:resolve:init -w @worksphere/database",
     "db:studio": "npm run prisma:studio -w @worksphere/database"
   },
   "overrides": {
